@@ -2,6 +2,7 @@ package com.mostybie.symtrack;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
@@ -13,6 +14,7 @@ import java.util.*;
  * Activity for answering a question.
  */
 public class AnswerQuestionActivity extends Activity {
+	private SurveyDatabaseHelper _databaseHelper;
 	private List<Question> _allQuestions;
 	private int _questionPosition;
 	private DayDate _dayInQuestion;
@@ -26,18 +28,29 @@ public class AnswerQuestionActivity extends Activity {
 		setContentView(R.layout.answer);
 		_questionPosition = getIntent().getIntExtra(QUESTION_POSITION, 0);
 		_dayInQuestion = getIntent().getParcelableExtra(DAY_IN_QUESTION);
-		// TODO: Should this be in async task...
-		_allQuestions = SurveyDatabaseHelper.getAllQuestions(new SurveyDatabaseHelper(this).getReadableDatabase());
-		getQuestionTextView().setText(getMyQuestion().getQuestionWording());
-		getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
-				_allQuestions.size());
+		_databaseHelper = new SurveyDatabaseHelper(this);
+		new LoadQuestionsTask().execute();
+	}
+
+	private final class LoadQuestionsTask extends AsyncTask<Void, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Void... params) {
+			_allQuestions = SurveyDatabaseHelper.getAllQuestions(_databaseHelper.getReadableDatabase());
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			getQuestionTextView().setText(getMyQuestion().getQuestionWording());
+			getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
+					_allQuestions.size());
+		}
 	}
 
 	public void setAnswer(View answerButton) {
 		int answer = Integer.parseInt(((RadioButton)answerButton).getText().toString());
-		// TODO: This should definitely be an async task
-		SurveyDatabaseHelper.setAnswer(new SurveyDatabaseHelper(this).getWritableDatabase(),
-				new AnswerRecord(getMyQuestion(), _dayInQuestion, answer));
+		new SetAnswerTask().execute(answer);
 		int newQuestionPosition = _questionPosition + 1;
 		if (newQuestionPosition >= _allQuestions.size()) {
 			Intent mainViewIntent = new Intent(this, MainActivity.class);
@@ -47,6 +60,16 @@ public class AnswerQuestionActivity extends Activity {
 			newAnswerIntent.putExtra(QUESTION_POSITION, newQuestionPosition);
 			newAnswerIntent.putExtra(DAY_IN_QUESTION, _dayInQuestion);
 			startActivity(newAnswerIntent);
+		}
+	}
+
+	public final class SetAnswerTask extends AsyncTask<Integer, Void, Void>
+	{
+		@Override
+		protected Void doInBackground(Integer... params) {
+			SurveyDatabaseHelper.setAnswer(_databaseHelper.getWritableDatabase(),
+					new AnswerRecord(getMyQuestion(), _dayInQuestion, params[0]));
+			return null;
 		}
 	}
 

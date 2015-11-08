@@ -7,12 +7,12 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Position/Total"
+            android:text="(loading questions...)"
             android:id="@+id/questionPositionText" android:textSize="20sp"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="How was your X?"
+            android:text="(loading question...)"
             android:id="@+id/questionView" android:textSize="20sp"/>
     <RadioGroup
             android:layout_width="wrap_content"
