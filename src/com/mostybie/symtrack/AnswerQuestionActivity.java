@@ -4,8 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import java.util.*;
@@ -45,11 +47,25 @@ public class AnswerQuestionActivity extends Activity {
 			getQuestionTextView().setText(getMyQuestion().getQuestionWording());
 			getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
 					_allQuestions.size());
+
+			RadioGroup answerRadioGroup = getAnswerRadioGroup();
+			for (int i = 0; i < 5; i++) {
+				RadioButton newButton = new RadioButton(AnswerQuestionActivity.this);
+				int buttonAnswer = i + 1;
+				newButton.setText("" + buttonAnswer);
+				newButton.setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						setAnswer(buttonAnswer);
+					}
+				});
+				answerRadioGroup.addView(newButton);
+			}
 		}
 	}
 
-	public void setAnswer(View answerButton) {
-		int answer = Integer.parseInt(((RadioButton)answerButton).getText().toString());
+	public void setAnswer(int answer) {
+		Log.d(AnswerQuestionActivity.class.getName(), "Setting answer: " + answer);
 		new SetAnswerTask().execute(answer);
 		int newQuestionPosition = _questionPosition + 1;
 		if (newQuestionPosition >= _allQuestions.size()) {
@@ -83,5 +99,9 @@ public class AnswerQuestionActivity extends Activity {
 
 	private TextView getQuestionPositionTextView() {
 		return (TextView)findViewById(R.id.questionPositionText);
+	}
+
+	private RadioGroup getAnswerRadioGroup() {
+		return (RadioGroup)findViewById(R.id.answerRadioGroup);
 	}
 }
