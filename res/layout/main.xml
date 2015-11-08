@@ -4,24 +4,10 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
 >
-    <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/symptomChooser"/>
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="30 minutes from now"
-            android:id="@+id/trackForShortPeriodButton" android:onClick="experienceForThirtyMinutes"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cancel Tracking"
-            android:id="@+id/cancelTrackingButton" android:onClick="cancelTracking"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Finish Tracking"
-            android:id="@+id/finishTrackingButton" android:onClick="finishTracking"/>
+            android:text="How was today?"
+            android:id="@+id/trackTodayButton" android:onClick="trackToday"/>
 </LinearLayout>
 
