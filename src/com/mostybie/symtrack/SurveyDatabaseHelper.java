@@ -62,6 +62,29 @@ public class SurveyDatabaseHelper extends SQLiteOpenHelper {
 		db.insertWithOnConflict("Answers", null, columnContent, SQLiteDatabase.CONFLICT_REPLACE);
 	}
 
+	public static boolean isDayAnswered(SQLiteDatabase db, DayDate day) {
+		String query = "SELECT EXISTS(SELECT * FROM Answers WHERE Date = '" + day.toCanonicalString() + "')";
+		Cursor results = db.rawQuery(query, null);
+		results.moveToFirst();
+		int result = results.getInt(0);
+		results.close();
+		return result > 0;
+	}
+
+	public static Integer getExistingAnswer(SQLiteDatabase db, long questionId, DayDate day) {
+		Cursor results = db.rawQuery("SELECT Answer FROM Answers WHERE QuestionId = " + questionId +
+			" AND Date = '" + day.toCanonicalString() + "'", null);
+		results.moveToFirst();
+		Integer answer;
+		if (results.isAfterLast()) {
+			answer = null;
+		} else {
+			answer = results.getInt(0);
+		}
+		results.close();
+		return answer;
+	}
+
 	public static List<Question> getAllQuestions(SQLiteDatabase db) {
 		List<Question> allQuestions = new ArrayList<>();
 		Cursor results = db.query("Questions", new String[] { "QuestionId", "Name", "QuestionWording" },

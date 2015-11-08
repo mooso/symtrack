@@ -61,6 +61,30 @@ public class AnswerQuestionActivity extends Activity {
 				});
 				answerRadioGroup.addView(newButton);
 			}
+			new ShowPreviousAnswerTask().execute();
+		}
+	}
+
+	private class ShowPreviousAnswerTask extends AsyncTask<Void, Void, Integer>
+	{
+		@Override
+		protected Integer doInBackground(Void... params) {
+			return SurveyDatabaseHelper.getExistingAnswer(_databaseHelper.getReadableDatabase(),
+					getMyQuestion().getId(), _dayInQuestion);
+		}
+
+		@Override
+		protected void onPostExecute(Integer existingAnswer) {
+			if (existingAnswer != null) {
+				RadioGroup answerGroup = getAnswerRadioGroup();
+				for (int i = 0; i < answerGroup.getChildCount(); i++) {
+					RadioButton currentButton = (RadioButton)answerGroup.getChildAt(i);
+					if (currentButton.getText().equals(existingAnswer.toString())) {
+						currentButton.toggle();
+						return;
+					}
+				}
+			}
 		}
 	}
 
