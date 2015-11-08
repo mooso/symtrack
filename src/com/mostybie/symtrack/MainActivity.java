@@ -8,7 +8,6 @@ import android.view.View;
 import java.util.*;
 
 public class MainActivity extends Activity {
-	private List<Question> _allQuestions;
 	private List<AnswerRecord> _records; // TODO: Persist those
 
 	public static final String NEW_ANSWERS = "NewAnswers";
@@ -20,7 +19,6 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-		initializeQuestions();
 		_records = new ArrayList<>(); // TODO: Actually get from state
 		List<AnswerRecord> newAnswers = getIntent().getParcelableArrayListExtra(NEW_ANSWERS);
 		if (newAnswers != null) {
@@ -31,20 +29,8 @@ public class MainActivity extends Activity {
 	public void trackToday(View trackTodayButton) {
 		Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
 		newAnswerIntent.putExtra(AnswerQuestionActivity.QUESTION_POSITION, 0);
-		newAnswerIntent.putExtra(AnswerQuestionActivity.ALL_QUESTIONS, new ArrayList<>(_allQuestions));
 		newAnswerIntent.putExtra(AnswerQuestionActivity.ANSWERS_SO_FAR, new ArrayList<AnswerRecord>());
 		newAnswerIntent.putExtra(AnswerQuestionActivity.DAY_IN_QUESTION, DayDate.Today());
 		startActivity(newAnswerIntent);
-	}
-
-	private void initializeQuestions() {
-		// TODO: Actual question logic where I can add/remove
-		_allQuestions = Arrays.asList(
-				new Question("Mood", "How was your mood today?"),
-				new Question("Sleep", "How was sleep last night?"),
-				new Question("Energy", "How was your energy level today?"),
-				new Question("Presence", "How was your presence?"),
-				new Question("Exercise", "How was your physical activity?")
-		);
 	}
 }

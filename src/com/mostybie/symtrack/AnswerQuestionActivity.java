@@ -14,11 +14,9 @@ import java.util.ArrayList;
  */
 public class AnswerQuestionActivity extends Activity {
 	private int _questionPosition;
-	private ArrayList<Question> _allQuestions;
 	private ArrayList<AnswerRecord> _answersSoFar;
 	private DayDate _dayInQuestion;
 
-	public final static String ALL_QUESTIONS = "AllQuestions";
 	public final static String QUESTION_POSITION = "QuestionPosition";
 	public final static String ANSWERS_SO_FAR = "AnswersSoFar";
 	public final static String DAY_IN_QUESTION = "DayInQuestion";
@@ -28,25 +26,24 @@ public class AnswerQuestionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.answer);
 		_questionPosition = getIntent().getIntExtra(QUESTION_POSITION, 0);
-		_allQuestions = getIntent().getParcelableArrayListExtra(ALL_QUESTIONS);
 		_answersSoFar = getIntent().getParcelableArrayListExtra(ANSWERS_SO_FAR);
 		_dayInQuestion = getIntent().getParcelableExtra(DAY_IN_QUESTION);
 		getQuestionTextView().setText(getMyQuestion().getQuestionWording());
-		getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" + _allQuestions.size());
+		getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
+				Survey.getMainSurvey().getQuestions().size());
 	}
 
 	public void setAnswer(View answerButton) {
 		int answer = Integer.parseInt(((RadioButton)answerButton).getText().toString());
 		_answersSoFar.add(new AnswerRecord(getMyQuestion(), _dayInQuestion, answer));
 		int newQuestionPosition = _questionPosition + 1;
-		if (newQuestionPosition == _allQuestions.size()) {
+		if (newQuestionPosition == Survey.getMainSurvey().getQuestions().size()) {
 			Intent mainViewIntent = new Intent(this, MainActivity.class);
 			mainViewIntent.putExtra(MainActivity.NEW_ANSWERS, _answersSoFar);
 			startActivity(mainViewIntent);
 		} else {
 			Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
 			newAnswerIntent.putExtra(QUESTION_POSITION, newQuestionPosition);
-			newAnswerIntent.putExtra(ALL_QUESTIONS, _allQuestions);
 			newAnswerIntent.putExtra(ANSWERS_SO_FAR, _answersSoFar);
 			newAnswerIntent.putExtra(DAY_IN_QUESTION, _dayInQuestion);
 			startActivity(newAnswerIntent);
@@ -54,7 +51,7 @@ public class AnswerQuestionActivity extends Activity {
 	}
 
 	private Question getMyQuestion() {
-		return _allQuestions.get(_questionPosition);
+		return Survey.getMainSurvey().getQuestions().get(_questionPosition);
 	}
 
 	private TextView getQuestionTextView() {
