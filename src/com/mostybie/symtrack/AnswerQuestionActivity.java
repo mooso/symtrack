@@ -15,11 +15,9 @@ import java.util.*;
 public class AnswerQuestionActivity extends Activity {
 	private List<Question> _allQuestions;
 	private int _questionPosition;
-	private ArrayList<AnswerRecord> _answersSoFar;
 	private DayDate _dayInQuestion;
 
 	public final static String QUESTION_POSITION = "QuestionPosition";
-	public final static String ANSWERS_SO_FAR = "AnswersSoFar";
 	public final static String DAY_IN_QUESTION = "DayInQuestion";
 
 	@Override
@@ -27,7 +25,6 @@ public class AnswerQuestionActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.answer);
 		_questionPosition = getIntent().getIntExtra(QUESTION_POSITION, 0);
-		_answersSoFar = getIntent().getParcelableArrayListExtra(ANSWERS_SO_FAR);
 		_dayInQuestion = getIntent().getParcelableExtra(DAY_IN_QUESTION);
 		// TODO: Should this be in async task...
 		_allQuestions = SurveyDatabaseHelper.getAllQuestions(new SurveyDatabaseHelper(this).getReadableDatabase());
@@ -38,16 +35,16 @@ public class AnswerQuestionActivity extends Activity {
 
 	public void setAnswer(View answerButton) {
 		int answer = Integer.parseInt(((RadioButton)answerButton).getText().toString());
-		_answersSoFar.add(new AnswerRecord(getMyQuestion(), _dayInQuestion, answer));
+		// TODO: This should definitely be an async task
+		SurveyDatabaseHelper.setAnswer(new SurveyDatabaseHelper(this).getWritableDatabase(),
+				new AnswerRecord(getMyQuestion(), _dayInQuestion, answer));
 		int newQuestionPosition = _questionPosition + 1;
 		if (newQuestionPosition >= _allQuestions.size()) {
 			Intent mainViewIntent = new Intent(this, MainActivity.class);
-			mainViewIntent.putExtra(MainActivity.NEW_ANSWERS, _answersSoFar);
 			startActivity(mainViewIntent);
 		} else {
 			Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
 			newAnswerIntent.putExtra(QUESTION_POSITION, newQuestionPosition);
-			newAnswerIntent.putExtra(ANSWERS_SO_FAR, _answersSoFar);
 			newAnswerIntent.putExtra(DAY_IN_QUESTION, _dayInQuestion);
 			startActivity(newAnswerIntent);
 		}

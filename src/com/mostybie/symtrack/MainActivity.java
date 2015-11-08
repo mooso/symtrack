@@ -29,7 +29,6 @@ public class MainActivity extends Activity {
 	public void trackToday(View trackTodayButton) {
 		Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
 		newAnswerIntent.putExtra(AnswerQuestionActivity.QUESTION_POSITION, 0);
-		newAnswerIntent.putExtra(AnswerQuestionActivity.ANSWERS_SO_FAR, new ArrayList<AnswerRecord>());
 		newAnswerIntent.putExtra(AnswerQuestionActivity.DAY_IN_QUESTION, DayDate.Today());
 		startActivity(newAnswerIntent);
 	}

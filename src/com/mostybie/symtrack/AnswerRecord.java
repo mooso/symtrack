@@ -17,6 +17,10 @@ public final class AnswerRecord implements Parcelable {
 		_answer = answer;
 	}
 
+	public DayDate getDay() { return _day; }
+	public Question getQuestion() { return _question; }
+	public int getAnswer() { return _answer; }
+
 	private AnswerRecord(Parcel in) {
 		_day = in.readParcelable(DayDate.class.getClassLoader());
 		_question = in.readParcelable(Question.class.getClassLoader());

@@ -54,6 +54,14 @@ public class SurveyDatabaseHelper extends SQLiteOpenHelper {
 		return new Question(questionId, name, questionWording);
 	}
 
+	public static void setAnswer(SQLiteDatabase db, AnswerRecord answer) {
+		ContentValues columnContent = new ContentValues();
+		columnContent.put("QuestionId", answer.getQuestion().getId());
+		columnContent.put("Date", answer.getDay().toCanonicalString());
+		columnContent.put("Answer", answer.getAnswer());
+		db.insertWithOnConflict("Answers", null, columnContent, SQLiteDatabase.CONFLICT_REPLACE);
+	}
+
 	public static List<Question> getAllQuestions(SQLiteDatabase db) {
 		List<Question> allQuestions = new ArrayList<>();
 		Cursor results = db.query("Questions", new String[] { "QuestionId", "Name", "QuestionWording" },

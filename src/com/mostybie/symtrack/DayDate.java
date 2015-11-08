@@ -20,6 +20,18 @@ public final class DayDate implements Parcelable {
 		_day = day;
 	}
 
+	public String toCanonicalString() {
+		// Sorry for being so US-centric...
+		return "" + _month + "/" + _day + "/" + _year;
+	}
+
+	public static DayDate fromCanonicalString(String s) {
+		String[] split = s.split("/");
+		return new DayDate(Integer.parseInt(split[2]),
+				Integer.parseInt(split[0]),
+				Integer.parseInt(split[1]));
+	}
+
 	private DayDate(Parcel in) {
 		_year = in.readInt();
 		_month = in.readInt();
