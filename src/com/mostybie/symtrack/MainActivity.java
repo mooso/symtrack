@@ -7,7 +7,7 @@ import android.view.View;
 
 import java.util.*;
 
-public class MyActivity extends Activity {
+public class MainActivity extends Activity {
 	private List<Question> _allQuestions;
 	private List<AnswerRecord> _records; // TODO: Persist those
 

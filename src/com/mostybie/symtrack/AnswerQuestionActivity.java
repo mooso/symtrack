@@ -40,8 +40,8 @@ public class AnswerQuestionActivity extends Activity {
 		_answersSoFar.add(new AnswerRecord(getMyQuestion(), _dayInQuestion, answer));
 		int newQuestionPosition = _questionPosition + 1;
 		if (newQuestionPosition == _allQuestions.size()) {
-			Intent mainViewIntent = new Intent(this, MyActivity.class);
-			mainViewIntent.putExtra(MyActivity.NEW_ANSWERS, _answersSoFar);
+			Intent mainViewIntent = new Intent(this, MainActivity.class);
+			mainViewIntent.putExtra(MainActivity.NEW_ANSWERS, _answersSoFar);
 			startActivity(mainViewIntent);
 		} else {
 			Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
