@@ -32,6 +32,7 @@ public class AnswerQuestionActivity extends Activity {
 		_answersSoFar = getIntent().getParcelableArrayListExtra(ANSWERS_SO_FAR);
 		_dayInQuestion = getIntent().getParcelableExtra(DAY_IN_QUESTION);
 		getQuestionTextView().setText(getMyQuestion().getQuestionWording());
+		getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" + _allQuestions.size());
 	}
 
 	public void setAnswer(View answerButton) {
@@ -58,5 +59,9 @@ public class AnswerQuestionActivity extends Activity {
 
 	private TextView getQuestionTextView() {
 		return (TextView)findViewById(R.id.questionView);
+	}
+
+	private TextView getQuestionPositionTextView() {
+		return (TextView)findViewById(R.id.questionPositionText);
 	}
 }
