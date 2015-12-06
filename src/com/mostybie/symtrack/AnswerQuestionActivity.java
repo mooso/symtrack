@@ -20,6 +20,7 @@ public class AnswerQuestionActivity extends Activity {
 	private List<Question> _allQuestions;
 	private int _questionPosition;
 	private DayDate _dayInQuestion;
+	private boolean _answerRadioButtonsAdded = false;
 
 	public final static String QUESTION_POSITION = "QuestionPosition";
 	public final static String DAY_IN_QUESTION = "DayInQuestion";
@@ -44,11 +45,19 @@ public class AnswerQuestionActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Void aVoid) {
-			getQuestionTextView().setText(getMyQuestion().getQuestionWording());
-			getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
-					_allQuestions.size());
+			populateUI();
+		}
+	}
 
-			RadioGroup answerRadioGroup = getAnswerRadioGroup();
+	private void populateUI() {
+		getQuestionTextView().setText(getMyQuestion().getQuestionWording());
+		getQuestionPositionTextView().setText("Question: " + (_questionPosition + 1) + "/" +
+				_allQuestions.size());
+
+		RadioGroup answerRadioGroup = getAnswerRadioGroup();
+		if (_answerRadioButtonsAdded) {
+			answerRadioGroup.clearCheck();
+		} else {
 			for (int i = 0; i < 5; i++) {
 				RadioButton newButton = new RadioButton(AnswerQuestionActivity.this);
 				int buttonAnswer = i + 1;
@@ -61,8 +70,9 @@ public class AnswerQuestionActivity extends Activity {
 				});
 				answerRadioGroup.addView(newButton);
 			}
-			new ShowPreviousAnswerTask().execute();
+			_answerRadioButtonsAdded = true;
 		}
+		new ShowPreviousAnswerTask().execute();
 	}
 
 	private class ShowPreviousAnswerTask extends AsyncTask<Void, Void, Integer>
@@ -75,40 +85,55 @@ public class AnswerQuestionActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Integer existingAnswer) {
-			if (existingAnswer != null) {
-				RadioGroup answerGroup = getAnswerRadioGroup();
-				for (int i = 0; i < answerGroup.getChildCount(); i++) {
-					RadioButton currentButton = (RadioButton)answerGroup.getChildAt(i);
-					if (currentButton.getText().equals(existingAnswer.toString())) {
-						currentButton.toggle();
-						return;
-					}
+			if (existingAnswer == null) {
+				return;
+			}
+			Log.d(AnswerQuestionActivity.class.getName(), "Got existing answer: " + existingAnswer);
+			RadioGroup answerGroup = getAnswerRadioGroup();
+			for (int i = 0; i < answerGroup.getChildCount(); i++) {
+				RadioButton currentButton = (RadioButton)answerGroup.getChildAt(i);
+				if (currentButton.getText().equals(existingAnswer.toString())) {
+					currentButton.setChecked(true);
+					return;
 				}
 			}
+			Log.w(AnswerQuestionActivity.class.getName(), "Failed to find radio button for answer: " + existingAnswer);
 		}
+	}
+
+	private static class QuestionWithAnswer
+	{
+		private final Question _question;
+		private final int _answer;
+
+		public QuestionWithAnswer(Question question, int answer) {
+			_answer = answer;
+			_question = question;
+		}
+
+		public int getAnswer() { return _answer; }
+		public Question getQuestion() { return _question; }
 	}
 
 	public void setAnswer(int answer) {
 		Log.d(AnswerQuestionActivity.class.getName(), "Setting answer: " + answer);
-		new SetAnswerTask().execute(answer);
+		new SetAnswerTask().execute(new QuestionWithAnswer(getMyQuestion(), answer));
 		int newQuestionPosition = _questionPosition + 1;
 		if (newQuestionPosition >= _allQuestions.size()) {
 			Intent mainViewIntent = new Intent(this, MainActivity.class);
 			startActivity(mainViewIntent);
 		} else {
-			Intent newAnswerIntent = new Intent(this, AnswerQuestionActivity.class);
-			newAnswerIntent.putExtra(QUESTION_POSITION, newQuestionPosition);
-			newAnswerIntent.putExtra(DAY_IN_QUESTION, _dayInQuestion);
-			startActivity(newAnswerIntent);
+			_questionPosition = newQuestionPosition;
+			populateUI();
 		}
 	}
 
-	public final class SetAnswerTask extends AsyncTask<Integer, Void, Void>
+	public final class SetAnswerTask extends AsyncTask<QuestionWithAnswer, Void, Void>
 	{
 		@Override
-		protected Void doInBackground(Integer... params) {
+		protected Void doInBackground(QuestionWithAnswer... params) {
 			SurveyDatabaseHelper.setAnswer(_databaseHelper.getWritableDatabase(),
-					new AnswerRecord(getMyQuestion(), _dayInQuestion, params[0]));
+					new AnswerRecord(params[0].getQuestion(), _dayInQuestion, params[0].getAnswer()));
 			return null;
 		}
 	}
