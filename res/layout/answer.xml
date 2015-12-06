@@ -7,6 +7,11 @@
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="(loading day...)"
+            android:id="@+id/dayText" android:textSize="20sp"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="(loading questions...)"
             android:id="@+id/questionPositionText" android:textSize="20sp"/>
     <TextView

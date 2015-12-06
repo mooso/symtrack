@@ -31,6 +31,7 @@ public class AnswerQuestionActivity extends Activity {
 		setContentView(R.layout.answer);
 		_questionPosition = getIntent().getIntExtra(QUESTION_POSITION, 0);
 		_dayInQuestion = getIntent().getParcelableExtra(DAY_IN_QUESTION);
+		getDayTextView().setText(_dayInQuestion.toCanonicalString());
 		_databaseHelper = new SurveyDatabaseHelper(this);
 		new LoadQuestionsTask().execute();
 	}
@@ -148,6 +149,10 @@ public class AnswerQuestionActivity extends Activity {
 
 	private TextView getQuestionPositionTextView() {
 		return (TextView)findViewById(R.id.questionPositionText);
+	}
+
+	private TextView getDayTextView() {
+		return (TextView)findViewById(R.id.dayText);
 	}
 
 	private RadioGroup getAnswerRadioGroup() {
